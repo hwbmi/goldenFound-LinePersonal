@@ -1,7 +1,5 @@
 var isAndroid = kendo.support.mobileOS.android;
 
-
-//var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://charder-test-api.herokuapp.com/';
 var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://hwbmi-api.herokuapp.com/';
 console.log(apiSite);
 
@@ -53,9 +51,8 @@ async function 取得量測記錄(data) {
         "量測記錄時間": 時間Date, //所有量測數據[i].量測時間,              
         "身高":    所有量測數據[rec].height,
         "體重":    所有量測數據[rec].net_weight,
-        "BMI":    所有量測數據[rec].bmi,
-        "量測紀錄圖片": 所有量測數據[rec].net_weight,              
-        "url": "2-views/量測報告.html?erec_num="+rec,
+        "BMI":    所有量測數據[rec].bmi,             
+        "url": "2-views/量測報告.html?"+$("#formHWBMI_ID").val()+"&"+rec,
         "section": "A"             
       };
       dataTemp.push(卡片); 
@@ -79,11 +76,6 @@ function nullForNow(e) {
 }
 
 function removeView(e) {
-  //console.log("removeView", e);  
-  //if (reloadCourseNeeded) {
-  //  readCourses(); 
-  //  reloadCourseNeeded = false;
-  //}
   if (!e.view.element.data("persist")) {
     //console.log(e);
     
@@ -94,24 +86,6 @@ function removeView(e) {
   }
 
 }
-
-//function initSearch(e) {
-//  console.log("initSearch");
-//  var searchBox = e.view.element.find("#demos-search");
-//
-//  searchBox.on("input", function () {
-//    searchForCourse(searchBox.val()); //, product);
-//  });
-//
-//  searchBox.on("blur", function () {
-//    //        if (searchBox.val() == "") {
-//    //            hideSearch();
-//    //        }
-//    searchBox.val("");
-//    searchForCourse("");
-//    hideSearch();
-//  });
-//}
 
 var desktop = !kendo.support.mobileOS;
 

@@ -13,24 +13,205 @@
   <body>
 
     <div data-role="view" data-show="dataShow"  data-title="量測報告" style="text-align: center;font-family: 'Noto Sans TC'" data-use-native-scrolling="true">
-       <div id="報告圖片Div" style="display:block">
-         <img id="報告圖片" src="" width="100%" />
-       </div>     
+
+      <div data-role="content" style="background-color: white;"> 
+
+        <a class="" style="font-size: 18px; color: white; float:left;margin-left:15px; margin-top:20px; background-color:#FF4350; padding:10px;border-radius:8px " onclick="">週</a> 
+        
+        <a class="" style="font-size: 18px; color: white; float:left;margin-left:15px;  margin-top:20px; background-color:lightgray; padding:10px;border-radius:8px " onclick="">月</a>   
+              
+        <a class="" style="font-size: 18px; color: white; float:left;margin-left:15px;  margin-top:20px; background-color:lightgray
+        ; padding:10px;border-radius:8px " onclick="">全部</a> 
+        
+        <div style="height: 60px"></div>
+           
+        <hr>
+
+        <a class="" style="font-size: 26px; color:#FF4350; float:left;margin-left:10px; font-weight:bold; padding:10px;border-radius:8px " onclick=""><i class="fa fa-caret-left" aria-hidden="true"></i></a>    
+        <span style="padding-top:20px">日期時間</span>
+        <a class="" style="font-size: 26px; color:#FF4350; float:right;margin-right:10px; font-weight:bold; padding:10px;border-radius:8px " onclick=""><i class="fa fa-caret-right" aria-hidden="true"></i></a>                  
+
+        <canvas id="myChartHeight" width="400px" height="160px" style="margin:10px"></canvas>   
+        <div style="margin-top:-10px; float:left">left date</div>        
+        <div style="margin-top:-10px; float:right">right date</div>        
+        <canvas id="myChartWeight" width="400px" height="160px" style="margin:10px"></canvas>   
+        <canvas id="myChartBMI" width="400px" height="160px" style="margin:10px"></canvas>   
+                
+<!--
+        <a class="" style="font-size: 26px; color:#FF4350; float:left;margin-left:100px; font-weight:bold; background-color:lightgray
+        ; padding:10px;border-radius:8px " onclick=""><</a>    
+        
+        <a class="" style="font-size: 26px; color:#FF4350; float:right;margin-right:100px; font-weight:bold; background-color:lightgray
+        ; padding:10px;border-radius:8px " onclick="">></a>   
+-->
+                 
+      </div>        
     </div>
     
     <script>
       var hrefString = window.location.href;
       var inputParamString = hrefString.split("?");
       var inputParam = inputParamString[2].split("&")
-      var picUrl = inputParamString[inputParamString.length-1].split("=")[1];
       
-      console.log(picUrl);
+        
+      var keyOfMeasurements;
+      var selTime;
+      var selTimeStr;    
+      var selMonth;
+      var selDate;
+      var selDay;    
+      var chartCenterDate;
+      
+      var weekDataForCharts=[];      
 
+      var ctx;
+      var myChartHeight;      
+      var myChartWeight;      
+      var myChartBMI;      
       
       function dataShow(){
-        console.log("Show Data");
-        $('#報告圖片').attr("src", picUrl);        
+        console.log("Show Data", inputParam);
+        console.log("取得量測記錄");
+      
+        var 所有量測數據;
+        讀取量測數據();
+     
       }
+            
+      async function 讀取量測數據() {
+        var paramToSend = "?API=33" + "&UserId=" + $("#formHWBMI_ID").val(); 
+        console.log(paramToSend);
+        var resStr = await callAPI(paramToSend, '讀取量測記錄'); //callAPI defined in functions.js
+
+        console.log(inputParam);
+        所有量測數據=JSON.parse(resStr); 
+        console.log(所有量測數據); 
+        
+        chartCenterDate=parseInt(inputParam[1]);
+        getDataofAweek(chartCenterDate);
+        
+        
+        //console.log("畫圖")
+        drawChart();  
+
+      }
+     
+      // Update charts
+      // myChartHeight.options.scales.x.display=true;
+      // myChartHeight.update()
+      
+      function getDataofAweek(reqDate){
+        keyOfMeasurements=Object.keys(所有量測數據);
+        selTime = new Date(reqDate);
+        selTimeStr = selTime.getTime().toString();  
+        matchedIdx=-1;
+        for (var i=0; i<keyOfMeasurements.length; i++){
+          if (keyOfMeasurements[i]==selTimeStr){
+            console.log("Found rec at:",i);
+            matchedIdx=i;
+            break;
+          }
+        }
+        
+        if (matchedIdx==-1) return;
+        
+        selMonth=selTime.toISOString().substr(0,8);
+        selDate=selTime.getDate();
+        selDay=selTime.getDay();
+        console.log(selMonth, selDate, selDay);
+        
+        for (var i=-5; i<2; i++) { // 從選擇日前四天到後兩天
+          var matchDay=selDate + i; //delta;
+          var matchFullDate=selMonth+matchDay.toString();
+          console.log(matchFullDate);
+                
+          var matched=false;          
+          for (var rec in 所有量測數據) {
+
+            if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+              weekDataForCharts.push(所有量測數據[rec].height);
+              matched=true;
+            }
+            
+            
+          }
+          if (!matched) weekDataForCharts.push(null);          
+        }
+        
+        console.log(weekDataForCharts);        
+      }
+      
+      function drawChart(){
+        
+          ctxH = $('#myChartHeight');
+          myChartHeight = new Chart(ctxH, {           
+            type: 'bar',
+            data: {
+              labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+              datasets: [{
+                backgroundColor: [
+                  'rgba(99, 128, 64, 0.9)'
+                ],
+                label: '身高',
+                data: [null, null, null, null, 53.5, 54.1, null]
+              }]
+            },
+            options: {
+              scales: {
+                x: {
+                  display:false
+//                  ticks: {
+//                    // Include a dollar sign in the ticks
+//                    callback: function(value, index, ticks) {
+//                        return '';
+//                    }
+//                  }
+                },
+                y: {
+                  ticks: {
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                        return value+'公分';
+                    }
+                  }
+                }                
+              }
+            }            
+          });    
+
+          ctxW = $('#myChartWeight');
+          myChartWeight = new Chart(ctxW, {
+            type: 'line',
+            data: {
+              labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+              datasets: [{
+                backgroundColor: [
+                  'rgba(255, 99, 132, 0.9)'
+                ],
+                label: '體重(公斤)',
+                cubicInterpolationMode: 'monotone',
+                data: [3.95, 4.18, null, 4.21, 4.28, 4.75, null]
+              }]
+            }
+          });
+        
+          ctxB = $('#myChartBMI');
+          myChartBMI = new Chart(ctxB, {
+            type: 'bar',
+            data: {
+              labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+              datasets: [{
+                backgroundColor: [
+                  'rgba(99, 128, 196, 0.9)'
+                ],
+                label: 'BMI          ',
+                data: [null, null, null, null, 14.81, 16.22, null]
+              }]
+            }
+          });
+
+      }      
+            
     </script>
     
     <script>

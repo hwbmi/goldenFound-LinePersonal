@@ -1,14 +1,16 @@
 var isAndroid = kendo.support.mobileOS.android;
 
 
-var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://charder-test-api.herokuapp.com/';
+//var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://charder-test-api.herokuapp.com/';
+var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://hwbmi-api.herokuapp.com/';
+console.log(apiSite);
 
 var measurementSource = new kendo.data.DataSource({
   transport: {
     read: function (data) { 取得量測記錄(measurementSource); }
   },
   sort: {
-    field: "量測時間",
+    field: "量測紀錄時間",
     dir: "desc"
   },
   requestStart: function () {
@@ -37,31 +39,30 @@ async function 取得量測記錄(data) {
     var dataTemp=[];
     data.success(dataTemp);
   } else {
-    paramToSend = "?API=32" + "&UserId=" + $("#formUserPhone").val(); //userId[1];
-    var res = await callAPI(paramToSend, '讀取量測記錄');
-    //console.log(res);    
-    var 所有量測數據=JSON.parse(res);
-    console.log(所有量測數據);   
-    
-    //改用 hardcode data 先測試
-    
+    paramToSend = "?API=33" + "&UserId=" + $("#formHWBMI_ID").val(); 
+    console.log(paramToSend);
+    resStr = await callAPI(paramToSend, '讀取量測記錄');
+
+    var 所有量測數據=JSON.parse(resStr); 
+
     var dataTemp=[];
-    for (var i=0; i<所有量測數據.length; i++ ) {
-      var 時間Date = new Date(所有量測數據[i].量測時間);
-      var 時間Str  = 時間Date.toLocaleString();   
-      console.log("時間Str", 時間Str);
+    for (rec in 所有量測數據) {
+      var 時間Date = 所有量測數據[rec].measure_time;
+      console.log("時間SDate", 時間Date);      
       var 卡片 = {
-        "量測記錄時間": 時間Str, //所有量測數據[i].量測時間,              
-        "綜合評價":    所有量測數據[i].HealthScore,
-        "量測紀錄圖片": 所有量測數據[i].PicUrl, 
-        "量測時間"   : 所有量測數據[i].量測時間,
-        "url": "2-views/量測報告.html?PicUrl="+所有量測數據[i].PicUrl,
+        "量測記錄時間": 時間Date, //所有量測數據[i].量測時間,              
+        "身高":    所有量測數據[rec].height,
+        "體重":    所有量測數據[rec].net_weight,
+        "BMI":    所有量測數據[rec].bmi,
+        "量測紀錄圖片": 所有量測數據[rec].net_weight,              
+        "url": "2-views/量測報告.html?erec_num="+rec,
         "section": "A"             
       };
       dataTemp.push(卡片); 
     }
     
-    data.success(dataTemp);    
+    data.success(dataTemp.reverse());    
+    //measurementSource.success(dataTemp);    
   }
   
   if (dataTemp.length==0) {

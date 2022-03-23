@@ -219,12 +219,6 @@ function 更新資料() {
  
   註冊會員();
   console.log(已經是會員);
-
-//  if (!已經是會員) {
-//    loadCourses = true;
-//    getCourseData(navDataSource);
-//    取得量測記錄(measurementSource);      
-//  }
   
   app.navigate('#:back');
 }
@@ -247,14 +241,210 @@ function callAPI(param, loadingMessage) {
     request.send();    
   });
 }
+//
+//async function checkUserIdExist() {
+//  //Call API:00 檢查 userId 有沒有重複參加 */
+//
+//  $.loading.start('檢查是否已填寫必要資料');
+//  paramToSend = "?API=14" + "&UserId=" + userId[1];
+//  var res = await callAPI(paramToSend, '檢查是否已填寫必要資料');
+//  //$.loading.end();
+//  
+//  if (res.substring(0,6) == "API:14") {
+//    alert("為了讓您更容易查詢，請註冊姓名及電話號碼");
+//    $("#formUserName").val(decodeURI(displayName[1]));
+//    $("#formUserName").attr("disabled", "disabled"); 
+//    $("#LINE頭像").attr("src", pictureUrl[1]);
+//    已經是會員 = false;
+//    
+//    // 2021-10-15 add
+//    // 讀取店面名稱和機器序號
+//    paramToSend = "?API=30" + "&CustomerId=啟德";
+//    var res = await callAPI(paramToSend, '讀取店面名稱');
+//    店面名稱 = JSON.parse(res);
+//    console.log(店面名稱);    
+//    // Append 店面名稱到個人資料中 預設常用健身房 選項
+//    for (var i=0; i< 店面名稱.length; i++){
+//      $("#預設常用健身房").append("<option value='"+店面名稱[i]+"'>"+店面名稱[i]+"</option>");
+//    } 
+//    
+//    $("#預設常用健身房").val(預設常用健身房); 
+//
+//    paramToSend = "?API=31" + "&CustomerId=啟德&StoreId="+$("#預設常用健身房").val();      
+//    var res = await callAPI(paramToSend, '讀取店面名稱');
+//    var machineStatus = res.split(",");
+//    機器序號 = machineStatus[0];
+//    console.log(機器序號); 
+//    // 2021-10-15 add above
+//    
+//    app.navigate('#forms');
+//  } else {
+//    console.log("已經是會員");
+//    已經是會員 = true;
+//    
+//    userProfile = JSON.parse(res);
+//    //console.log(userProfile);
+//
+//    $("#formUserName").val(userProfile[0]);
+//    $("#formUserGender").val(userProfile[1]);     
+//    $("#formUserBirth").val(userProfile[2]);
+//    $("#formUserPhone").val(userProfile[3]);
+//    $("#formUserID").val(userProfile[4]);
+//    $("#formUserAddr").val(userProfile[5]);
+//    $("#formUserHeight").val(userProfile[8]);
+//    $("#formUserWeight").val(userProfile[9]);    
+//    
+//    // formEmergencyContact 挪來用為 formUserEthnicity
+//    $("#formUserEthnicity").val(userProfile[10]);
+//    
+//    // formEmergencyPhone 挪來用為 常用預設健身房
+//    預設常用健身房 = (userProfile[11]=="undefined")? "開發 T99999999":userProfile[11];
+//    //$("#預設常用健身房").val(預設常用健身房);  
+//    
+//    $("#LINE頭像").attr("src", userProfile[7]);
+//    
+//    // 讀取店面名稱和機器序號
+//    paramToSend = "?API=30" + "&CustomerId=啟德";
+//    var res = await callAPI(paramToSend, '讀取店面名稱');
+//    店面名稱 = JSON.parse(res);
+//    console.log(店面名稱);
+//
+//    // Append 店面名稱到個人資料中 預設常用健身房 選項
+//    for (var i=0; i< 店面名稱.length; i++){
+//      $("#預設常用健身房").append("<option value='"+店面名稱[i]+"'>"+店面名稱[i]+"</option>");
+//    } 
+//    
+//    $("#預設常用健身房").val(預設常用健身房); 
+//
+//    paramToSend = "?API=31" + "&CustomerId=啟德&StoreId="+$("#預設常用健身房").val();      
+//    var res = await callAPI(paramToSend, '讀取店面名稱');
+//    var machineStatus = res.split(",");
+//    機器序號 = machineStatus[0];
+//    console.log(機器序號);    
+//    
+//    paramToSend = "?API=32" + "&UserId=" + $("#formUserPhone").val(); //userId[1];
+//    var res = await callAPI(paramToSend, '讀取量測記錄');
+//    //console.log(res);
+//    var 所有量測數據=JSON.parse(res);
+//    //console.log(所有量測數據);    
+//    
+//    var dataTemp=[];
+//    for (var i=0; i<所有量測數據.length; i++ ) {
+//      var 時間Date = new Date(所有量測數據[i].量測時間);
+//      var 時間Str  = 時間Date.toLocaleString();   
+//      console.log("時間Str", 時間Str);      
+//      var 卡片 = {
+//        "量測記錄時間": 時間Str, //所有量測數據[i].量測時間,              
+//        "綜合評價":    所有量測數據[i].HealthScore,
+//        "量測紀錄圖片": 所有量測數據[i].PicUrl,              
+//        "url": "2-views/量測報告.html?PicUrl="+所有量測數據[i].PicUrl,
+//        "section": "A"             
+//      };
+//      dataTemp.push(卡片); 
+//    }
+//    
+//    measurementSource.success(dataTemp);
+//
+//    if (dataTemp.length==0) {
+//      $("#量測記錄title").text("尚無量測記錄");
+//    }else {
+//      $("#量測記錄title").text("量測記錄");
+//    }     
+//       
+//    refresh=true;
+//    measurementSource.read(); // 產生 sorting 
+//    $.loading.end();
+//    
+////    loadCourses = true;
+////    getCourseData(navDataSource);
+////    取得量測記錄(measurementSource);    
+//  }
+//}
+
+
 
 async function checkUserIdExist() {
-  //Call API:00 檢查 userId 有沒有重複參加 */
 
-  $.loading.start('檢查是否已填寫必要資料');
-  paramToSend = "?API=14" + "&UserId=" + userId[1];
-  var res = await callAPI(paramToSend, '檢查是否已填寫必要資料');
-  //$.loading.end();
+  $.loading.start('檢查是否已註冊');
+  paramToSend = "?API=04" + "&LineId=" + userId[1];
+
+  console.log(apiSite);
+  
+  var res;
+  var resStr = await callAPI(paramToSend, '檢查是否已填寫必要資料'); 
+  $.loading.end();
+  
+  if (resStr.includes("NoFound")) {
+    console.log("Not Found");
+    alert("為了讓您更容易查詢，請註冊姓名及電話號碼");
+    $("#formUserName").val(decodeURI(displayName[1]));
+    $("#formUserName").attr("disabled", "disabled"); 
+    $("#LINE頭像").attr("src", pictureUrl[1]);
+    已經是會員 = false; 
+    app.navigate('#forms'); 
+    return;
+  } else { // 已經是會員    
+    res = JSON.parse(resStr);
+    console.log(res);
+    $("#formUserName").val(decodeURI(displayName[1]));
+    $("#formUserName").attr("disabled", "disabled"); 
+    $("#LINE頭像").attr("src", pictureUrl[1]); 
+    $("#formUserPhone").val(res.電話);
+    $("#formHWBMI_ID").val(res.Id);
+    console.log(res)
+    已經是會員 = true;     
+  }
+  
+  //讀取量測記錄
+//  paramToSend = "?API=33" + "&UserId=" + res.Id;
+//  console.log(paramToSend);
+//  resStr = await callAPI(paramToSend, '讀取量測記錄');
+//  console.log(typeof resStr, resStr);
+//
+//  var 所有量測數據=JSON.parse(resStr);
+//  console.log(Object.keys(所有量測數據));    
+//  
+//  var dataTemp=[];
+//  for (data in 所有量測數據) {
+//    var 時間Date = 所有量測數據[data].measure_time;
+//    console.log("時間SDate", 時間Date);      
+//    var 卡片 = {
+//      "量測記錄時間": 時間Date, //所有量測數據[i].量測時間,              
+//      "身高":    所有量測數據[data].height,
+//      "體重":    所有量測數據[data].net_weight,
+//      "BMI":    所有量測數據[data].bmi,
+//      "量測紀錄圖片": 所有量測數據[data].net_weight,              
+//      "url": "2-views/量測報告.html?erec_num="+data,
+//      "section": "A"             
+//    };
+//    dataTemp.push(卡片); 
+//  }
+//  
+//  console.log(dataTemp);
+//   
+//  measurementSource.success(dataTemp);
+//
+//  if (dataTemp.length==0) {
+//    $("#量測記錄title").text("尚無量測記錄");
+//  }else {
+//    $("#量測記錄title").text("量測記錄");
+//  }     
+
+  取得量測記錄(measurementSource);
+  refresh=true;
+  measurementSource.read(); // 產生 sorting 
+  //$.loading.end(); 
+  
+  // show barcode
+  var hwBMI_ID=$("#formHWBMI_ID").val();
+  JsBarcode("#barcode", hwBMI_ID, {
+    displayValue: false,
+    width:2,
+    height:70
+  });   
+  
+  return;
+  
   
   if (res.substring(0,6) == "API:14") {
     alert("為了讓您更容易查詢，請註冊姓名及電話號碼");
@@ -470,7 +660,7 @@ async function 註冊會員() {
 };
 
 function checkInputParam() {
-  console.log(inputParam);
+  //console.log(inputParam);
   try {
     displayName = inputParam[0].split("=");
     userId = inputParam[1].split("=");
@@ -479,7 +669,7 @@ function checkInputParam() {
     inputError = true;
   }
 
-  console.log(displayName[1]);
+  //console.log(displayName[1]);
 
   if (inputError) {
     alert("輸入參數錯誤");

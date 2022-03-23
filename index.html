@@ -7,11 +7,13 @@
 <html>
 
 <head>
+  <script> var useLocalAPIs = false; </script>
+  
   <title></title>
 
   <!-- LINE Opengraph https://developers.line.biz/en/faq/tags/media/#how-are-the-url-previews-generated -->
 <!--  <meta property="og:image" content="https://raw.githubusercontent.com/forgeFitnessUgym/bodyMeasureLINE/master/ForgeLogo%E5%A4%A7.png" />  -->
-  <meta property="og:title" content="金機 身高體重BMI量測" />
+  <meta property="og:title" content="測試 身高體重BMI量測" />
   <meta property="og:description" content=""/>
   <!-- End LINE Opengraph -->
    
@@ -60,7 +62,6 @@
     }
 
     .km-on-ios .km-header .km-navbar
-    /* for data-title="啟德- 身體組成自動量測系統" */
     {
       background-color: red; /*darkslategray;*/
       /* deeppink; */
@@ -79,7 +80,6 @@
     }
 
     .km-on-android .km-header .km-navbar
-    /* for data-title="啟德- 身體組成自動量測系統" */
     {
       background-color: red; /*darkslategray;*/
       /* deeppink; */
@@ -133,10 +133,10 @@
   </style>
   
   <div id="errorMessage" style="display: none; margin-top: 2em; color: red; font-weight: bold" align="center">
-    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">金機 身高體重BMI量測</h3>
+    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">測試 身高體重BMI量測</h3>
   </div>
     
-  <div data-role="view" data-title="金機 身高體重BMI量測" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
+  <div data-role="view" data-title="測試 身高體重BMI量測" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
     <header data-role="header">
       <div data-role="navbar" id="normal" class="km-accent">
 
@@ -165,9 +165,9 @@
     </ul>
 -->
    
-    <div style="height:270px; background-color:black; text-align:center">
-      <img src="金機.png" height="60px" style="margin-top:10px"><br>
-      
+    <div style="height:220px; background-color:black; text-align:center">
+      <!-- <img src="金機.png" height="60px" style="margin-top:10px"><br>-->
+      <div style="height:30px"></div>
       <span style="color:white">請到身高體重BMI機，掃描條碼進行量測</span><br>
 
       <img id="barcode" style="margin-top:10px"/><br>
@@ -223,9 +223,9 @@
             <a href="#: url #" class="量測記錄卡片" >
               <!--<img src="#: 量測紀錄圖片 #" width="50" height="50" style="float:left;margin-right:10px"/> -->         
               <p style="font-size:12px; color: black; margin-top:-8px"> #: 量測記錄時間 # </p>
-              <span style="font-size:16px; color: black; margin-top:-10px; font-weight:bold">綜合評價: #: 綜合評價 # </span>
-              <span style="font-size:14px; color: black; margin-top:-10px; font-weight:bold">/100</span>
-              <span style="font-size:16px; color: black; margin-top:-10px; font-weight:bold">分</span> 
+              <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">身高: #: 身高 # </span>
+              <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">, 體重: #: 體重 #</span>
+              <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">, BMI: #: BMI #</span>
             </a>
           </script>
         </ul>
@@ -236,7 +236,7 @@
   <div id="forms" data-role="view" data-title="個人資料" data-init="initForm" data-use-native-scrolling="true" style="font-family: 'Noto Sans TC'">
     <div id="formData">
       <img id="LINE頭像" src="" class="km-thumbnail" style="width: 10em; height: 10em; margin: 1em auto; display: block; float: none;"/>
-      <div style="margin-left:10px">為了讓您更容易查詢，請註冊姓名及電話號碼</div>
+      <div style="margin-left:23px">為了讓您更容易查詢，請註冊姓名及電話號碼</div>
       <ul data-role="listview" data-style="inset">
         <li>
           <label class="km-label-above">姓名
@@ -248,6 +248,11 @@
             <input id="formUserPhone" class="NotoSansFont" type="text" placeholder="格式: 09XX123456"/> 
           </label> 
         </li>
+        <li style="display:none">
+          <label class="km-label-above">HWBMI_ID
+            <input id="formHWBMI_ID" class="NotoSansFont" type="text" /> 
+          </label> 
+        </li>        
       </ul>
 
       <div align="center">
@@ -310,25 +315,6 @@
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-app.js"></script>
  
-  <script>
-  
-    
-    // barcode
-    var hwBMI_ID="1234567890"
-    JsBarcode("#barcode", hwBMI_ID, {
-      displayValue: false,
-      width:2,
-      height:70
-    });   
-
-    var useLocalAPIs = false;
-//    try {
-//      console.log(process.env.useLocalAPIs);
-//    }catch(e){
-//      console.log(e);
-//    }
-    
-  </script>
   <script src="3-controllers/functions.js"></script>
   <script src="1-models/data-process.js"></script>
   <script src="js/prettify.js"></script> 

@@ -129,7 +129,7 @@
           for (var rec in 所有量測數據) {
 
             if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
-              weekDataForCharts.push(所有量測數據[rec].height);
+              weekDataForCharts.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
               matched=true;
             }
             

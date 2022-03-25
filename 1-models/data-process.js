@@ -46,7 +46,7 @@ async function 取得量測記錄(data) {
     var dataTemp=[];
     for (rec in 所有量測數據) {
       var 時間Date = 所有量測數據[rec].measure_time;
-      console.log("時間SDate", 時間Date);      
+      console.log("時間Date", 時間Date);      
       var 卡片 = {
         "量測記錄時間": 時間Date, //所有量測數據[i].量測時間,              
         "身高":    所有量測數據[rec].height,

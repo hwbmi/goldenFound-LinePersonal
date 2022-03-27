@@ -57,6 +57,12 @@
     </div>
     
     <script>
+      // 時區時間差
+      var timeZoneOffset = new Date().getTimezoneOffset();
+      console.log(timeZoneOffset); // if offset equals -60 then the time zone offset is UTC+01
+                                   // In Taiwan, offset is -480 min
+      var UTC_delta = timeZoneOffset/(-60); // +8 in Taiwan
+      
       var hrefString = window.location.href;
       var inputParamString = hrefString.split("?");
       var inputParam = inputParamString[2].split("&")
@@ -94,16 +100,17 @@
       var myChartBMI;      
       
       var chartRange=0; //0:week, 1:month, 2:all
+      var 所有量測數據;
       
       //==================================
       // simualte data for test 
-      weekLabelsforChart=[
-        '2022/03/21', '2022/03/22', '2022/03/23', '2022/03/24', '2022/03/25', '2022/03/26', '2022/03/27'
-      ];
-
-      for (var i=0; i<30;i++) monthLabelsforChart[i]="";
-      monthLabelsforChart[0]  = '2022/03/01';
-      monthLabelsforChart[29] = '2022/03/30';
+//      weekLabelsforChart=[
+//        '2022/03/21', '2022/03/22', '2022/03/23', '2022/03/24', '2022/03/25', '2022/03/26', '2022/03/27'
+//      ];
+//
+//      for (var i=0; i<30;i++) monthLabelsforChart[i]="";
+//      monthLabelsforChart[0]  = '2022/03/01';
+//      monthLabelsforChart[29] = '2022/03/30';
       
       
       // simulate for a year
@@ -133,8 +140,7 @@
         console.log("Show Data", inputParam);
         console.log("取得量測記錄");
       
-        var 所有量測數據;
-        讀取量測數據ForChart();
+        讀取量測數據ForChart();                 
      
       }
             
@@ -185,11 +191,26 @@
         $("#月按鈕").css("background-color","#FF4350");
         $("#全部按鈕").css("background-color","lightgray");
         
+        getDataOfAmonth(chartCenterDate);
         $("#chart_range").text(monthLabelsforChart[0]+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1]);
         myChartHeight.data.labels=monthLabelsforChart;
+        myChartWeight.data.labels=monthLabelsforChart;
+        myChartBMI.data.labels=monthLabelsforChart;
+        
         myChartHeight.data.datasets[0].data=monthDataForHeight;
-                
-        myChartHeight.update();
+        myChartWeight.data.datasets[0].data=monthDataForWeight;
+        myChartBMI.data.datasets[0].data=monthDataForBMI;
+      
+        myChartHeight.update();          
+        myChartWeight.update();          
+        myChartBMI.update();         
+        
+        
+//        $("#chart_range").text(monthLabelsforChart[0]+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1]);
+//        myChartHeight.data.labels=monthLabelsforChart;
+//        myChartHeight.data.datasets[0].data=monthDataForHeight;
+//                
+//        myChartHeight.update();
         
       }
       
@@ -207,87 +228,195 @@
       }      
       
       function chartMovePrev(){
-        console.log("Move to Prev");
         if (chartRange==0) { // move prev one day
+          console.log("Move to Prev day");
+          
           //simulated data
           //weekDataForHeight.unshift(Math.floor(Math.random()*50)/10+170);
           //weekDataForHeight.pop();
           //myChartHeight.update();                
           
-          chartCenterDate -=86400000;
-          getDataOfAweek(chartCenterDate);
-          myChartHeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
-          myChartHeight.data.datasets[0].data=weekDataForHeight; //必要，不然 update()無效
-          myChartWeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
-          myChartWeight.data.datasets[0].data=weekDataForWeight; //必要，不然 update()無效
-          myChartBMI.data.label=weekLabelsforChart;              //必要，不然 update()無效
-          myChartBMI.data.datasets[0].data=weekDataForBMI;       //必要，不然 update()無效          
+          //一次更新整週資料，會失去 chart 移動效果          
+          //chartCenterDate -=86400000;
+          //getDataOfAweek(chartCenterDate);
+          //myChartHeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
+          //myChartHeight.data.datasets[0].data=weekDataForHeight; //必要，不然 update()無效
+          //myChartWeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
+          //myChartWeight.data.datasets[0].data=weekDataForWeight; //必要，不然 update()無效
+          //myChartBMI.data.label=weekLabelsforChart;              //必要，不然 update()無效
+          //myChartBMI.data.datasets[0].data=weekDataForBMI;       //必要，不然 update()無效          
+          //
+          //$("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
+          //myChartHeight.update();
+          //myChartWeight.update();
+          //myChartBMI.update();
           
-          $("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
-          myChartHeight.update();
-          myChartWeight.update();
-          myChartBMI.update();
+          // 取前一天資料
+          getWeekDataPrevDay();   
+          $("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);       
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();           
           
         } else if (chartRange==1) { // move prev one week
-          //simulated data
-          for (var i=0; i<7;i++){
-            monthDataForHeight.unshift(Math.floor(Math.random()*50)/10+170);
-            monthDataForHeight.pop();
-          }
-          myChartHeight.update();        
+          console.log("Move to Prev week");  
+
+          $("#chart_range").text(monthLabelsforChart[0]+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1]);
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();                   
         }
         
       }
       
       function chartMoveNext(){
-        console.log("Move to Next");
         if (chartRange==0) { // move next one day
+          console.log("Move to Next Day");
           //simulated data
           //weekDataForHeight.push(Math.floor(Math.random()*50)/10+170);
           //weekDataForHeight.shift();
           //myChartHeight.update();      
           
-          chartCenterDate +=86400000;
-          getDataOfAweek(chartCenterDate);
-          myChartHeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
-          myChartHeight.data.datasets[0].data=weekDataForHeight; //必要，不然 update()無效
-          myChartWeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
-          myChartWeight.data.datasets[0].data=weekDataForWeight; //必要，不然 update()無效
-          myChartBMI.data.label=weekLabelsforChart;              //必要，不然 update()無效
-          myChartBMI.data.datasets[0].data=weekDataForBMI;       //必要，不然 update()無效 
-          
+          getWeekDataNextDay(); 
           $("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
-          myChartHeight.update();
-          myChartWeight.update();
-          myChartBMI.update();          
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();           
           
-        } else if (chartRange==1) { // move next one day
-          //simulated data
-          for (var i=0; i<7; i++){
-            monthDataForHeight.push(Math.floor(Math.random()*50)/10+170);
-            monthDataForHeight.shift();
-          }
-          myChartHeight.update();        
+        } else if (chartRange==1) { // move next one week
+          console.log("Move to Next week");          
+          
+          $("#chart_range").text(monthLabelsforChart[0]+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1]);
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();           
         }
                 
       }      
       
-      function getDataOfAweek(reqDate){
-        keyOfMeasurements=Object.keys(所有量測數據);
-        selTime = new Date(reqDate);
+      function getWeekDataPrevDay(){
+        chartCenterDate -=86400000;
+        selTime = new Date(chartCenterDate-86400000*3 - UTC_delta*3600000);
+        selTimeStr = selTime.getTime().toString(); 
+        console.log(selTime);
+
+        selMonth=selTime.toISOString().substr(0,8);
+        selDate=selTime.getDate();
+        selDay=selTime.getDay();
+        console.log(selMonth, selDate, selDay);          
+
+        var matchDay=selDate; 
+        var matchFullDate=selMonth+matchDay.toString();
+        console.log(matchFullDate);          
+
+        var matched=false;  
+        var newDataForHeight;
+        var newDataForWeight;
+        var newDataForBMI;
+        for (var rec in 所有量測數據) {
+
+          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
+            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
+            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            matched=true;
+            console.log("matched");
+          }            
+        }
+
+        if (!matched) {
+          newDataForHeight=null;
+          newDataForWeight=null;
+          newDataForBMI   =null; 
+          console.log("not matched");
+        }          
+
+        if (chartRange==0){
+          weekDataForHeight.unshift(newDataForHeight);          
+          weekDataForWeight.unshift(newDataForWeight);          
+          weekDataForBMI.unshift(newDataForBMI); 
+          weekLabelsforChart.unshift(matchFullDate);
+          weekDataForHeight.pop();          
+          weekDataForWeight.pop();          
+          weekDataForBMI.pop(); 
+          weekLabelsforChart.pop();                         
+        } else if (chartRange==1){
+          monthDataForHeight.unshift(newDataForHeight);          
+          monthDataForWeight.unshift(newDataForWeight);          
+          monthDataForBMI.unshift(newDataForBMI); 
+          monthLabelsforChart.unshift(matchFullDate);
+          monthDataForHeight.pop();          
+          monthDataForWeight.pop();          
+          monthDataForBMI.pop(); 
+          monthLabelsforChart.pop();                         
+        }
+        
+      }
+      
+      function getWeekDataNextDay(){
+        chartCenterDate +=86400000;
+        selTime = new Date(chartCenterDate+86400000*3 - UTC_delta*3600000);
         selTimeStr = selTime.getTime().toString(); 
         console.log(selTime);
         
-//        matchedIdx=-1;
-//        for (var i=0; i<keyOfMeasurements.length; i++){
-//          if (keyOfMeasurements[i]==selTimeStr){
-//            console.log("Found rec at:",i);
-//            matchedIdx=i;
-//            break;
-//          }
-//        }
-//        
-//        if (matchedIdx==-1) return;
+        selMonth=selTime.toISOString().substr(0,8);
+        selDate=selTime.getDate();
+        selDay=selTime.getDay();
+        console.log(selMonth, selDate, selDay);          
+
+        var matchDay=selDate; 
+        var matchFullDate=selMonth+matchDay.toString();
+        console.log(matchFullDate);          
+
+        var matched=false;  
+        var newDataForHeight;
+        var newDataForWeight;
+        var newDataForBMI;
+        for (var rec in 所有量測數據) {
+
+          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
+            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
+            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            matched=true;
+            console.log("matched");
+          }            
+        }
+
+        if (!matched) {
+          newDataForHeight=null;
+          newDataForWeight=null;
+          newDataForBMI   =null; 
+          console.log("not matched");
+        }          
+
+        if (chartRange==0){
+          weekDataForHeight.push(newDataForHeight);          
+          weekDataForWeight.push(newDataForWeight);          
+          weekDataForBMI.push(newDataForBMI); 
+          weekLabelsforChart.push(matchFullDate);
+          weekDataForHeight.shift();          
+          weekDataForWeight.shift();          
+          weekDataForBMI.shift(); 
+          weekLabelsforChart.shift();                        
+        } else if (chartRange==1){
+          monthDataForHeight.push(newDataForHeight);          
+          monthDataForWeight.push(newDataForWeight);          
+          monthDataForBMI.push(newDataForBMI); 
+          monthLabelsforChart.push(matchFullDate);
+          monthDataForHeight.shift();          
+          monthDataForWeight.shift();          
+          monthDataForBMI.shift(); 
+          monthLabelsforChart.shift();          
+        }
+      }
+      
+      
+      function getDataOfAweek(reqDate){
+        keyOfMeasurements=Object.keys(所有量測數據);
+        selTime = new Date(reqDate - UTC_delta*3600000);
+        selTimeStr = selTime.getTime().toString(); 
+        console.log(selTime);
         
         selMonth=selTime.toISOString().substr(0,8);
         selDate=selTime.getDate();
@@ -298,7 +427,7 @@
         weekDataForHeight=[];
         weekDataForWeight=[];
         weekDataForBMI=[];
-        for (var i=-4; i<3; i++) { // 從選擇日前四天到後兩天
+        for (var i=-3; i<4; i++) { // 從選擇日前四天到後兩天
           var matchDay=selDate + i; //delta;
           var matchFullDate=selMonth+matchDay.toString();
           weekLabelsforChart.push(matchFullDate);
@@ -326,6 +455,49 @@
         console.log(weekDataForBMI);        
       }
       
+      function getDataOfAmonth(reqDate){
+        keyOfMeasurements=Object.keys(所有量測數據);
+        selTime = new Date(reqDate - UTC_delta*3600000);
+        selTimeStr = selTime.getTime().toString(); 
+        console.log("aaa",selTime);
+              
+        selMonth=selTime.toISOString().substr(0,8);
+        selDate=selTime.getDate();
+        selDay=selTime.getDay();
+        console.log(selMonth, selDate, selDay);
+        
+        monthLabelsforChart=[];
+        monthDataForHeight=[];
+        monthDataForWeight=[];
+        monthDataForBMI=[];
+        for (var i=-26; i<4; i++) { 
+          var matchDay=selDate + i; //delta;
+          var matchFullDate=selMonth+matchDay.toString();
+          monthLabelsforChart.push(matchFullDate);
+          console.log(matchFullDate);
+                
+          var matched=false;          
+          for (var rec in 所有量測數據) {
+
+            if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+              monthDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
+              monthDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
+              monthDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+              matched=true;
+            }            
+          }
+          if (!matched) {
+            monthDataForHeight.push(null);          
+            monthDataForWeight.push(null);          
+            monthDataForBMI.push(null);          
+          }
+        }
+        
+        console.log(monthDataForHeight);        
+        console.log(monthDataForWeight);        
+        console.log(monthDataForBMI);        
+      }
+      
       function drawChart(){
         
         $("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
@@ -350,13 +522,14 @@
               x: {
                 display:true,
                   ticks: {
+                    //count:10,
                     // Include a dollar sign in the ticks
                     callback: function(value, index, ticks) {
                       if (chartRange==0) {
                         if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, weekLabelsforChart[index].length);
                         else return '';
                       } else if (chartRange==1) {
-                        if (index==0 || index==15 ||index==27) return '03/28';
+                        if (index==0 || index==15 ||index==27) return monthLabelsforChart[index].substr(5, monthLabelsforChart[index].length);
                         else return '';
                       }
                      
@@ -394,25 +567,26 @@
               x: {
                 display:true,
                   ticks: {
-                    // Include a dollar sign in the ticks
+                    //count:10,
                     callback: function(value, index, ticks) {
                       if (chartRange==0) {
                         if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, weekLabelsforChart[index].length);
                         else return '';
                       } else if (chartRange==1) {
-                        if (index==0 || index==15 ||index==27) return '03/28';
+                        if (index==0 || index==15 ||index==27) return monthLabelsforChart[index].substr(5, monthLabelsforChart[index].length);
                         else return '';
                       }
                      
                     }
                   }
               },
-              y: {
-//                  ticks: {
+              y: {           
+                ticks:{
+                  count:10
 //                    callback: function(value, index, ticks) {
-//                        return value+'公分';
+//                        return ' '+value;
 //                    }
-//                  }
+                }
               }                
             }
           } 
@@ -438,13 +612,14 @@
               x: {
                 display:true,
                   ticks: {
+                    count:10,                    
                     // Include a dollar sign in the ticks
                     callback: function(value, index, ticks) {
                       if (chartRange==0) {
                         if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, weekLabelsforChart[index].length);
                         else return '';
                       } else if (chartRange==1) {
-                        if (index==0 || index==15 ||index==27) return '03/28';
+                        if (index==0 || index==15 ||index==27) return monthLabelsforChart[index].substr(5, monthLabelsforChart[index].length);
                         else return '';
                       }
                      
@@ -452,11 +627,12 @@
                   }
               },
               y: {
-//                  ticks: {
+                ticks:{
+                  count:10
 //                    callback: function(value, index, ticks) {
-//                        return value+'公分';
+//                        return 'x'+value;
 //                    }
-//                  }
+                }
               }                
             }
           } 

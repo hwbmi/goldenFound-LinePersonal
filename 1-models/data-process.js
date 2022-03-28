@@ -58,7 +58,14 @@ async function 取得量測記錄(data) {
       dataTemp.push(卡片); 
     }
     
-    data.success(dataTemp.reverse());    
+    //data.success(dataTemp.reverse());    
+    data.success(dataTemp.sort(function(a,b) {
+        if (a.量測記錄時間 < b.量測記錄時間) return  1;
+        if (a.量測記錄時間 > b.量測記錄時間) return -1;
+        return 0;
+      })
+    );
+    
     //measurementSource.success(dataTemp);    
   }
   
@@ -69,6 +76,7 @@ async function 取得量測記錄(data) {
   }  
   //return;
 }
+
 
 function nullForNow(e) {
   console.log("nullForNow");

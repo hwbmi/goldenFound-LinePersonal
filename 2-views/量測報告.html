@@ -153,7 +153,8 @@
         所有量測數據=JSON.parse(resStr); 
         console.log(所有量測數據); 
         
-        chartCenterDate=parseInt(inputParam[1]);
+        var keys=inputParam[1].split('_');
+        chartCenterDate=parseInt(keys[1]);
         getDataOfAweek(chartCenterDate);
         
         

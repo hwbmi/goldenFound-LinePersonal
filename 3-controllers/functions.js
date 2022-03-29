@@ -178,7 +178,7 @@ async function 註冊會員() {
     
     var res = await callAPI(paramToSend, '寫入資料');
     
-    if (res == "API:03 會員資料Line綁定寫入成功") {
+    if (res == "API:03 會員資料Line綁定hwBMI寫入成功") {
       alert("資料更新成功，回到量測頁面");
       checkUserIdExist();
       已經是會員 = true;

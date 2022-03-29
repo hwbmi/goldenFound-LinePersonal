@@ -1,6 +1,7 @@
 var isAndroid = kendo.support.mobileOS.android;
 
-var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://hwbmi-api.herokuapp.com/';
+//var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://hwbmi-api.herokuapp.com/';
+var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://chdr-weight.herokuapp.com/';
 console.log(apiSite);
 
 var measurementSource = new kendo.data.DataSource({
